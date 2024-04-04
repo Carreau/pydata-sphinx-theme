@@ -154,7 +154,7 @@ jobs:
           name: python-coverage-comment-action
           path: python-coverage-comment-action.txt
 
-# Build our site on the 3 major OSes and check for Sphinx warnings
+  # Build our site on the 3 major OSes and check for Sphinx warnings
   build-site:
     needs: [lint]
     strategy:
