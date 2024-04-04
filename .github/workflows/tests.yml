@@ -92,6 +92,13 @@ jobs:
           nox -s compile
       - name: Run tests
         run: pytest -m "not a11y" --color=yes --cov --cov-report=xml
+        env:
+          COVERAGE_FILE: ".coverage.${{ matrix.python_version }}.${{ matrix.os }}"
+      - name: Store coverage file
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python_version }}-${{ matrix.os }}
+          path: .coverage.${{ matrix.python_version }}.${{ matrix.os }}
       - name: Upload to Codecov
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest' && matrix.sphinx-version == 'dev'
         uses: codecov/codecov-action@v4
@@ -117,7 +124,37 @@ jobs:
           nox -s a11y
         continue-on-error: true
 
-  # Build our site on the 3 major OSes and check for Sphinx warnings
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs: run-pytest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        id: download
+        with:
+          pattern: coverage-*
+          merge-multiple: true
+
+      - name: Coverage comment
+        id: coverage_comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_COVERAGE_FILES: true
+
+      - name: Store Pull Request comment to be posted
+        uses: actions/upload-artifact@v4
+        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+        with:
+          name: python-coverage-comment-action
+          path: python-coverage-comment-action.txt
+
+# Build our site on the 3 major OSes and check for Sphinx warnings
   build-site:
     needs: [lint]
     strategy:
