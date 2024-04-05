@@ -125,9 +125,11 @@ jobs:
         continue-on-error: true
 
   coverage:
-    name: Coverage
+    name: Collect Coverage
     runs-on: ubuntu-latest
     needs: run-pytest
+    # run both on previous step success and failure
+    if: "!cancelled()"
     permissions:
       pull-requests: write
       contents: write
