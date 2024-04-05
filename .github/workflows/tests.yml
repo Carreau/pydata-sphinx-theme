@@ -93,12 +93,12 @@ jobs:
       - name: Run tests
         run: pytest -m "not a11y" --color=yes --cov --cov-report=xml
         env:
-          COVERAGE_FILE: ".coverage.${{ matrix.python-version }}.${{ matrix.os }}.${{ sphinx-version }}"
+          COVERAGE_FILE: ".coverage.${{ matrix.python-version }}.${{ matrix.os }}.${{ matrix.sphinx-version }}"
       - name: Store coverage file
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.python-version }}-${{ matrix.os }}-${{ sphinx-version }}
-          path: .coverage.${{ matrix.python-version }}.${{ matrix.os }}.${{ sphinx-version }}
+          name: coverage-${{ matrix.python-version }}-${{ matrix.os }}-${{ matrix.sphinx-version }}
+          path: .coverage.${{ matrix.python-version }}.${{ matrix.os }}.${{ matrix.sphinx-version }}
       - name: Upload to Codecov
         if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest' && matrix.sphinx-version == 'dev'
         uses: codecov/codecov-action@v4
